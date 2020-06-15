@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
  
 import ContactInfo from './ContactInfo';
+import ContactDetail from './ContactDetail';
  
 class Contact extends Component {
   state = {
     keyword : '',
+    selectedKey : -1,
     contactData : [{
       name : 'David',
       phone : '010-1234-5678'
@@ -24,19 +26,22 @@ class Contact extends Component {
       keyword : e.target.value
     });
   }
+
+  _nameClick = (key) => {
+    this.setState({
+      selectedKey : key
+    });
+  }
   render(){
     const mapToComponents = (data) => {
       data.sort();
       data = data.filter(
-        (contact) => {
-          return contact.name.toLowerCase()
-          .indexOf(this.state.keyword.toLowerCase()) > -1;
-        }
+        (contact) => contact.name.toLowerCase().indexOf(this.state.keyword.toLowerCase()) > -1
+        
       );
       return data.map(
-        (contact, i) => {
-          return (<ContactInfo contact={contact} key={i} />);
-        }
+        (contact, i) => (<ContactInfo contact={contact} key={i} onClick={() => this._nameClick(i)}/>)
+        
       );
     }
     return(
@@ -49,6 +54,9 @@ class Contact extends Component {
           onChange={this._searchContact}
         />
         <div>{mapToComponents(this.state.contactData)}</div>
+        <ContactDetail
+          isSelected = {this.state.selectedKey !== -1}
+          contact = {this.state.contactData[this.state.selectedKey]}/>
       </div>
     )
   }
